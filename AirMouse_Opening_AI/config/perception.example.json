@@ -1,0 +1,8 @@
+{
+  "human_repository": "../.external/nidar-human",
+  "opening_model": "../weights/candidate_opening.pt",
+  "device": "cpu",
+  "opening_confidence": 0.25,
+  "human_confidence": 0.2,
+  "max_age_ms": 10000
+}

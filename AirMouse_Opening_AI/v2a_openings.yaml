@@ -1,0 +1,8 @@
+path: F:/CodingWorld/NIDAR Air mouse Incubation/AirMouse_Opening_AI/datasets/v2a_openings
+
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: traversable_opening

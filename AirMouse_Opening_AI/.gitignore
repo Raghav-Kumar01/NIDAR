@@ -1,0 +1,46 @@
+# Local environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+# Private/local data and generated experiments
+/datasets/
+/runs/
+/weights/
+/output/
+/release_checks/
+*.pt
+*.pth
+*.onnx
+*.engine
+*.tflite
+*.cache
+*.log
+*.zip
+*.mp4
+*.avi
+*.mov
+*.mkv
+# Credentials and machine-specific configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+credentials*.json
+*.local.json
+*.local.yaml
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+/.external/

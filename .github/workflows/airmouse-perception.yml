@@ -1,0 +1,24 @@
+name: AirMouse source checks
+on:
+  push:
+    paths: ['AirMouse_Opening_AI/**', '.github/workflows/airmouse-perception.yml']
+  pull_request:
+    paths: ['AirMouse_Opening_AI/**', '.github/workflows/airmouse-perception.yml']
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: AirMouse_Opening_AI
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - run: python -m pip install Pillow numpy
+      - run: python tools/check_source.py
+      - run: python -B -m unittest discover -s tests
+      - run: python -B -m unittest discover -s annotation_tools
+      - run: python tools/check_release.py

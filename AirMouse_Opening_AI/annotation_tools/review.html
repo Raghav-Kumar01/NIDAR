@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Opening annotation review</title>
+<style>
+body{margin:24px;background:#131920;color:#edf4fa;font:16px system-ui}header{max-width:1150px}button,select{padding:10px;margin:4px;border:1px solid #718398;border-radius:5px;background:#223244;color:white}button{cursor:pointer}#canvas{display:block;max-width:100%;margin-top:18px;background:#05090d}#message{color:#ffd287;min-height:24px}#details{color:#afc5d7;overflow-wrap:anywhere}p{max-width:1100px}
+</style>
+<header><h1>Visible opening — annotation review</h1>
+<p>Trace the visible free-space region inside the opening. Exclude door panels, frames, glass and visible obstructions. These images cannot establish physical flight clearance. Every model proposal is unverified.</p>
+<p>Click to draw vertices. “Finish polygon” closes the current shape. Use multiple polygons for distinct openings. Clear proposals to redraw. Saving a positive requires a polygon; saving a negative requires explicit confirmation that no target opening is visible.</p>
+<select id="filter"><option value="">All sources</option></select><button id="next">Skip for now</button><span id="progress"></span>
+<div><button id="clear">Clear all polygons</button><button id="undo">Undo last vertex / polygon</button><button id="finish">Finish polygon</button></div>
+<div><button data-decision="positive">Save reviewed positive</button><button data-decision="negative">Save reviewed negative</button><button data-decision="ambiguous">Save ambiguous</button><button data-decision="reject">Save rejected</button></div>
+<p id="details"></p><div id="message"></div></header><canvas id="canvas"></canvas>
+<script>
+const token='__TOKEN__', canvas=document.querySelector('#canvas'),ctx=canvas.getContext('2d');
+let queue=[],index=0,record=null,polygons=[],drawing=[],picture=new Image(),saving=false,ready=false;
+const msg=t=>document.querySelector('#message').textContent=t;
+function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(picture,0,0,canvas.width,canvas.height);for(const p of [...polygons,drawing]){if(!p.length)continue;ctx.beginPath();p.forEach(([x,y],i)=>i?ctx.lineTo(x*canvas.width,y*canvas.height):ctx.moveTo(x*canvas.width,y*canvas.height));if(p!==drawing)ctx.closePath();ctx.fillStyle='#00dcaa35';ctx.strokeStyle=p===drawing?'#ffe083':'#00e5b4';ctx.lineWidth=2;ctx.fill();ctx.stroke();}}
+function finish(){if(drawing.length<3){msg('Draw at least three vertices.');return;}polygons.push(drawing);drawing=[];draw();}
+async function load(){ready=false;record=null;const source=document.querySelector('#filter').value;const list=queue.filter(r=>!source||r.source===source);if(!list.length){msg('No pending images in this source.');return;}index=((index%list.length)+list.length)%list.length;const id=list[index].id;const res=await fetch('/record/'+id);const loaded=await res.json();picture=new Image();picture.onload=()=>{record=loaded;polygons=structuredClone(record.polygons);drawing=[];const scale=Math.min(1100/picture.width,760/picture.height,1);canvas.width=Math.round(picture.width*scale);canvas.height=Math.round(picture.height*scale);ready=true;draw();document.querySelector('#details').textContent=record.source+' | '+record.proposal_state+' | previous category: '+(record.prior_category||'none')+' | '+record.image+' | '+record.notes.join('; ');document.querySelector('#progress').textContent=(index+1)+' / '+list.length+' pending in selection';msg('Review geometry and semantics before saving. No prediction does not mean negative.');};picture.onerror=()=>msg('Image failed to load; review disabled.');picture.src='/image/'+id;}
+canvas.onclick=e=>{if(!ready||saving)return;const r=canvas.getBoundingClientRect();drawing.push([Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))]);draw();};
+document.querySelector('#finish').onclick=()=>{if(ready&&!saving)finish();};
+document.querySelector('#clear').onclick=()=>{if(!ready||saving)return;polygons=[];drawing=[];draw();};
+document.querySelector('#undo').onclick=()=>{if(!ready||saving)return;if(drawing.length)drawing.pop();else polygons.pop();draw();};
+document.querySelector('#next').onclick=()=>{if(!ready||saving)return;index++;load();};
+document.querySelector('#filter').onchange=()=>{if(saving)return;index=0;load();};
+document.querySelectorAll('[data-decision]').forEach(b=>b.onclick=async()=>{if(!ready||saving)return;const status=b.dataset.decision;if(drawing.length){msg('Finish or clear the unfinished polygon first.');return;}if(status==='positive'&&!polygons.length){msg('A positive needs at least one polygon.');return;}if(status!=='positive'&&polygons.length){msg('Clear all polygons before saving this decision.');return;}saving=true;try{const r=await fetch('/review',{method:'POST',headers:{'Content-Type':'application/json','X-Review-Token':token},body:JSON.stringify({id:record.id,status,polygons})});const result=await r.json();if(!r.ok)throw Error(result.error);queue=queue.filter(x=>x.id!==record.id);await load();}catch(e){msg(e.message);}finally{saving=false;}});
+(async()=>{queue=await(await fetch('/queue')).json();for(const s of [...new Set(queue.map(r=>r.source))].sort()){const o=document.createElement('option');o.value=s;o.textContent=s;document.querySelector('#filter').append(o);}await load();})();
+</script></html>
