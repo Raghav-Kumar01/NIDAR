@@ -1,0 +1,7 @@
+-r requirements.txt
+# Raj's tested runtime dependencies for tracking, OSNet and local dashboard.
+lap==0.5.13
+ultralytics==8.4.163
+fastapi==0.141.1
+uvicorn==0.54.0
+psutil>=7.2,<8

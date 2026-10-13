@@ -1,3 +1,5 @@
+> **Historical detector-only phase.** The full application is now connected through `run_full_perception.py`; see [FULL_APPLICATION.md](FULL_APPLICATION.md). The completion claim below applies only to the earlier shared-frame detector API.
+
 # Combined NIDAR perception: opening masks and human candidates
 
 ## Phase completion report

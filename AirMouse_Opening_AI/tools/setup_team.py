@@ -44,7 +44,7 @@ def setup(device='cpu'):
     ml = repo / 'Raj Gupta/ML'
     manifest = json.loads((ml / 'models/manifest.json').read_text())
     entries = {entry['path']: entry for entry in manifest['models']}
-    for name in ('models/yolo11n.pt', 'models/nidar-person-posture-specialist-yolo11n.pt'):
+    for name in ('models/yolo11n.pt', 'models/nidar-person-posture-specialist-yolo11n.pt', 'models/osnet_x0_25_msmt17.pth'):
         if digest(ml / name) != entries[name]['sha256']:
             raise ValueError('Human checkpoint checksum mismatch: ' + name)
     config = json.loads((ROOT / 'config/perception.example.json').read_text())

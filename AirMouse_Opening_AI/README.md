@@ -12,6 +12,10 @@ A candidate is a visible free-space aperture through a wall, partition, doorway,
 
 Older scripts and labels use `traversable_opening` and sometimes broader door/window semantics. They are retained as historical research tools; do not merge those labels with V3 without re-review. See [dataset specification](docs/DATASET.md).
 
+## Full combined application
+
+**[Complete application setup](docs/FULL_APPLICATION.md)** connects opening segmentation with Raj's hybrid detector, BoT-SORT, temporal verification, OSNet Re-ID, persistent survivor management and local dashboard. Use `run_full_perception.py` with `requirements-full.txt`. See [implementation and test report](docs/FULL_APPLICATION_REPORT.md).
+
 ## Team setup
 
 **Start here: [TEAM_SETUP.md](docs/TEAM_SETUP.md)** for clone, installation, automatic artifact setup, inference and troubleshooting.

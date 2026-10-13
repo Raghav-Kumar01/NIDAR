@@ -1,3 +1,5 @@
+> **Complete application:** follow [FULL_APPLICATION.md](FULL_APPLICATION.md) for openings + tracking + Re-ID + survivor management + dashboard. The commands below retain the lightweight detector-only mode.
+
 # Team setup: combined opening and human perception
 
 ## What you receive
